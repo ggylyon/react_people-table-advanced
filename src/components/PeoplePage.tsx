@@ -90,8 +90,6 @@ export const PeoplePage = () => {
     });
   }, [searchParams, people, dispatch]);
 
-  const hasFilter = !isLoading && !isError;
-  const hasError = isError && !isLoading;
   const hasNoPeople = !isLoading && people.length === 0 && !isError;
   const hasNoMatchingPeople =
     !isError && !isLoading && people.length > 0 && updatedPeople.length === 0;
@@ -105,14 +103,14 @@ export const PeoplePage = () => {
       <div className="block">
         <div className="columns is-desktop is-flex-direction-row-reverse">
           <div className="column is-7-tablet is-narrow-desktop">
-            {hasFilter && <PeopleFilters />}
+            {!isLoading && !isError && <PeopleFilters />}
           </div>
 
           <div className="column">
             <div className="box table-container">
               {isLoading && <Loader />}
 
-              {hasError && (
+              {isError && !isLoading && (
                 <p data-cy="peopleLoadingError">Something went wrong</p>
               )}
 
