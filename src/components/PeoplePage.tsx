@@ -31,30 +31,30 @@ export const PeoplePage = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    let filteredPeople = [...people];
+    let processedPeople = [...people];
 
-    const query = searchParams.get('query');
+    const query = searchParams.get('query')?.trim().toLowerCase();
     const centuries = searchParams.getAll('centuries');
     const sex = searchParams.get('sex');
 
     if (query) {
-      filteredPeople = filteredPeople.filter(person => {
+      processedPeople = processedPeople.filter(person => {
         return (
-          person.name.includes(query) ||
-          person.fatherName?.includes(query) ||
-          person.motherName?.includes(query)
+          person.name.toLowerCase().includes(query) ||
+          person.fatherName?.toLowerCase().includes(query) ||
+          person.motherName?.toLowerCase().includes(query)
         );
       });
     }
 
     if (centuries.length > 0) {
-      filteredPeople = filteredPeople.filter(person => {
+      processedPeople = processedPeople.filter(person => {
         return centuries.includes(String(Math.ceil(person.born / 100)));
       });
     }
 
     if (sex) {
-      filteredPeople = filteredPeople.filter(person => {
+      processedPeople = processedPeople.filter(person => {
         return person.sex === sex;
       });
     }
@@ -67,28 +67,36 @@ export const PeoplePage = () => {
       switch (sortCriteria) {
         case 'name':
         case 'sex':
-          filteredPeople.sort((firstPerson, secondPerson) =>
+          processedPeople.sort((firstPerson, secondPerson) =>
             firstPerson[sortCriteria].localeCompare(secondPerson[sortCriteria]),
           );
           break;
         case 'born':
         case 'died':
-          filteredPeople.sort(
+          processedPeople.sort(
             (firstPerson, secondPerson) =>
               firstPerson[sortCriteria] - secondPerson[sortCriteria],
           );
       }
 
       if (order) {
-        filteredPeople.reverse();
+        processedPeople.reverse();
       }
     }
 
     dispatch({
       type: 'updatePeople',
-      payload: { updatedPeople: filteredPeople },
+      payload: { updatedPeople: processedPeople },
     });
   }, [searchParams, people, dispatch]);
+
+  const hasFilter = !isLoading && !isError;
+  const hasError = isError && !isLoading;
+  const hasNoPeople = !isLoading && people.length === 0 && !isError;
+  const hasNoMatchingPeople =
+    !isError && !isLoading && people.length > 0 && updatedPeople.length === 0;
+  const hasPeopleTable =
+    !isError && !isLoading && people.length > 0 && updatedPeople.length > 0;
 
   return (
     <>
@@ -97,27 +105,28 @@ export const PeoplePage = () => {
       <div className="block">
         <div className="columns is-desktop is-flex-direction-row-reverse">
           <div className="column is-7-tablet is-narrow-desktop">
-            {!isLoading && !isError && <PeopleFilters />}
+            {hasFilter && <PeopleFilters />}
           </div>
 
           <div className="column">
             <div className="box table-container">
               {isLoading && <Loader />}
-              {isError && (
+
+              {hasError && (
                 <p data-cy="peopleLoadingError">Something went wrong</p>
               )}
 
-              {!isLoading && people.length === 0 && !isError && (
+              {hasNoPeople && (
                 <p data-cy="noPeopleMessage">
                   There are no people on the server
                 </p>
               )}
 
-              {!isError && !isLoading && updatedPeople.length === 0 && (
+              {hasNoMatchingPeople && (
                 <p>There are no people matching the current search criteria</p>
               )}
 
-              {!isError && !isLoading && people.length > 0 && <PeopleTable />}
+              {hasPeopleTable && <PeopleTable />}
             </div>
           </div>
         </div>

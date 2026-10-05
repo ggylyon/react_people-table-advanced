@@ -4,7 +4,6 @@ import { PersonLink } from './PersonLink';
 import { getSearchWith } from '../utils/searchHelper';
 import classNames from 'classnames';
 
-/* eslint-disable jsx-a11y/control-has-associated-label */
 export const PeopleTable = () => {
   const { updatedPeople } = useGlobalState();
   const [searchParams] = useSearchParams();

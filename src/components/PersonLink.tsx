@@ -5,6 +5,7 @@ import { Person } from '../types';
 export const PersonLink = ({ person }: { person: Person }) => {
   const { people } = useGlobalState();
   const { search } = useLocation();
+  const { slug } = useParams();
 
   const personMother = people.find(
     motherToFind => person.motherName === motherToFind.name,
@@ -13,8 +14,6 @@ export const PersonLink = ({ person }: { person: Person }) => {
   const personFather = people.find(
     fatherToFind => person.fatherName === fatherToFind.name,
   );
-
-  const { slug } = useParams();
 
   return (
     <tr
