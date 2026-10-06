@@ -4,9 +4,13 @@ const BASE_URL =
 export function getPeople() {
   return fetch(BASE_URL)
     .then(response => {
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+
       return response.json();
     })
     .catch(response => {
-      throw new Error(response);
+      throw new Error(response.statusText);
     });
 }
