@@ -11,6 +11,6 @@ export function getPeople() {
       return response.json();
     })
     .catch(response => {
-      throw new Error(response.statusText);
+      throw new Error(response.message);
     });
 }
